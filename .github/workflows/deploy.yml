@@ -8,6 +8,7 @@ on:
 permissions:
   id-token: write   # Bắt buộc: cho phép GitHub request OIDC token
   contents: read     # Cho phép checkout code
+  repository-projects: write # Quyền ghi vào projects của repository
 
 jobs:
   deploy-sam:
@@ -16,7 +17,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+        with:
+          fetch-depth: 0 # Lấy toàn bộ lịch sử commit để đảm bảo có commit hash chính xác
       # - uses: actions/checkout@v3
       # - uses: aws-actions/setup-sam@v2
       # - uses: actions/setup-python@v3

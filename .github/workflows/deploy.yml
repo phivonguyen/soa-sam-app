@@ -1,0 +1,42 @@
+name: SAM Deploy
+
+on:
+  push:
+    paths:
+      - 'hello_world/**' # Chỉ trigger khi code Lambda thay đổi
+
+permissions:
+  id-token: write   # Bắt buộc: cho phép GitHub request OIDC token
+  contents: read     # Cho phép checkout code
+
+jobs:
+  deploy-sam:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+
+      - name: Setup SAM CLI
+        uses: aws-actions/setup-sam@v2
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: SAM Build
+        run: sam build
+
+      - name: SAM Deploy
+        run: |
+          sam deploy \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset \
+            --stack-name SOA-Stack-Serverless-Application \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }}

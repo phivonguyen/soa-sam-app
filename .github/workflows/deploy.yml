@@ -17,6 +17,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # - uses: actions/checkout@v3
+      # - uses: aws-actions/setup-sam@v2
+      # - uses: actions/setup-python@v3
+
       - name: Setup Python
         uses: actions/setup-python@v5
 
@@ -30,7 +34,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: SAM Build
-        run: sam build
+        run: sam build --use-container
 
       - name: SAM Deploy
         run: |
